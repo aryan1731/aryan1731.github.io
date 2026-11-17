@@ -117,7 +117,13 @@ a:focus-visible{outline:3px solid var(--card);outline-offset:3px}
 .box-title{margin:0 0 .2em;font:italic 900 clamp(3rem,8.4vw,6.2rem)/.86 var(--display);text-transform:uppercase}
 .box-line{margin:0 auto;max-width:26em}
 .box .actions{justify-content:center}
-.box-mail{margin:18px 0 0;font:700 1.45rem/1.2 var(--display);letter-spacing:.02em;color:var(--chalk-soft);overflow-wrap:anywhere}
+.box-mail{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 14px;margin:18px 0 0;font:700 1.45rem/1.2 var(--display);letter-spacing:.02em;color:var(--chalk-soft)}
+.box-mail a{text-decoration:none;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.box-mail a:hover{color:var(--chalk);border-bottom-color:var(--chalk)}
+.copy{font:700 1.2rem/1 var(--display);letter-spacing:.02em;color:var(--chalk);background:transparent;border:1.5px solid var(--line);border-radius:3px;padding:6px 12px 5px;cursor:pointer}
+.copy:hover{border-color:var(--chalk)}
+.copy:focus-visible{outline:3px solid var(--card);outline-offset:3px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .goal{width:min(250px,62%);height:38px;margin:clamp(40px,6vw,68px) auto 0;border:3px solid var(--chalk);border-bottom:0;
   background:repeating-linear-gradient(90deg,transparent 0 9px,rgba(243,240,228,.34) 9px 10px),repeating-linear-gradient(0deg,transparent 0 9px,rgba(243,240,228,.34) 9px 10px)}
 
@@ -272,11 +278,15 @@ a:focus-visible{outline:3px solid var(--card);outline-offset:3px}
         <h2 class="box-title">Transfer enquiries</h2>
         <p class="box-line">Hiring for a product role? I'd like to hear about it.</p>
         <div class="actions">
-          <a class="btn btn-solid" href="mailto:aryandcoc@gmail.com">Email me</a>
+          <a class="btn btn-solid" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=aryandcoc@gmail.com" target="_blank" rel="noopener">Email me</a>
           <a class="btn btn-line" href="https://www.linkedin.com/in/aryan-dhawale/" target="_blank" rel="noopener">LinkedIn</a>
           <a class="btn btn-line" href="assets/Aryan_Dhawale_Resume.pdf" target="_blank" rel="noopener">Resume</a>
         </div>
-        <p class="box-mail">aryandcoc@gmail.com</p>
+        <p class="box-mail">
+          <a href="mailto:aryandcoc@gmail.com" id="email-address">aryandcoc@gmail.com</a>
+          <button class="copy" type="button" id="copy-email" data-email="aryandcoc@gmail.com">Copy</button>
+          <span class="sr-only" role="status" id="copy-status"></span>
+        </p>
         <div class="goal" aria-hidden="true"></div>
       </div>
     </div>
@@ -290,6 +300,53 @@ a:focus-visible{outline:3px solid var(--card);outline-offset:3px}
     <p>© 2026 Aryan Dhawale</p>
   </div>
 </footer>
+
+<script>
+(function () {
+  var btn = document.getElementById("copy-email");
+  var status = document.getElementById("copy-status");
+  var link = document.getElementById("email-address");
+  if (!btn) return;
+  var email = btn.getAttribute("data-email");
+  var timer;
+
+  function show(label, message) {
+    btn.textContent = label;
+    status.textContent = message;
+    clearTimeout(timer);
+    timer = setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+  }
+
+  function fallback() {
+    var area = document.createElement("textarea");
+    area.value = email;
+    area.setAttribute("readonly", "");
+    area.style.position = "absolute";
+    area.style.left = "-9999px";
+    document.body.appendChild(area);
+    area.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(area);
+    if (ok) {
+      show("Copied", "Email address copied");
+    } else {
+      window.getSelection().selectAllChildren(link);
+      show("Selected", "Email address selected. Copy it with your keyboard.");
+    }
+  }
+
+  btn.addEventListener("click", function () {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(email).then(function () {
+        show("Copied", "Email address copied");
+      }, fallback);
+    } else {
+      fallback();
+    }
+  });
+})();
+</script>
 
 </body>
 </html>
